@@ -1,0 +1,58 @@
+Q14 | DELETE | 주문 상세 40번을 잘못 입력했다고 가정하여 삭제하고 결과를 확인한다.
+실행 시각: 2026-10-15T13:58:11+09:00
+SQLite: 3.53.1
+원본: sql/03_queries.sql
+DB: data/shop.db
+
+[실행 SQL]
+-- 주문 20번의 다른 상세는 남습니다. 마지막에는 원래 40행으로 복원합니다.
+BEGIN;
+[실제 결과]
+실행 완료
+
+[실행 SQL]
+SELECT 'before' AS stage, id, order_id, product_id, quantity
+FROM order_item WHERE id = 40;
+[실제 결과]
+stage  | id | order_id | product_id | quantity
+-------+----+----------+------------+---------
+before | 40 | 20       | 7          | 1       
+(1행)
+
+[실행 SQL]
+DELETE FROM order_item WHERE id = 40;
+[실제 결과]
+영향받은 행: 1
+
+[실행 SQL]
+SELECT 'after' AS stage, COUNT(*) AS target_rows
+FROM order_item WHERE id = 40;
+[실제 결과]
+stage | target_rows
+------+------------
+after | 0          
+(1행)
+
+[실행 SQL]
+SELECT 'after' AS stage, COUNT(*) AS all_item_rows FROM order_item;
+[실제 결과]
+stage | all_item_rows
+------+--------------
+after | 39           
+(1행)
+
+[실행 SQL]
+ROLLBACK;
+[실제 결과]
+실행 완료
+
+[실행 SQL]
+SELECT 'restored' AS stage, id, order_id, product_id, quantity
+FROM order_item WHERE id = 40;
+[실제 결과]
+stage    | id | order_id | product_id | quantity
+---------+----+----------+------------+---------
+restored | 40 | 20       | 7          | 1       
+(1행)
+
+상태: 성공

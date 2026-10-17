@@ -1,0 +1,57 @@
+Q13 | UPDATE | 마우스 현재 가격을 수정하고 과거 주문 단가가 유지됨을 확인한다.
+실행 시각: 2026-10-15T13:58:11+09:00
+SQLite: 3.53.1
+원본: sql/03_queries.sql
+DB: data/shop.db
+
+[실행 SQL]
+-- 반복 시연: BEGIN -> 변경 전 조회 -> UPDATE -> 변경 후 조회 -> ROLLBACK.
+BEGIN;
+[실제 결과]
+실행 완료
+
+[실행 SQL]
+SELECT 'before' AS stage, p.price AS current_price,
+       oi.unit_price AS ordered_unit_price, oi.quantity * oi.unit_price AS line_total_won
+FROM product AS p
+INNER JOIN order_item AS oi ON oi.product_id = p.id
+WHERE p.id = 2 AND oi.order_id = 1;
+[실제 결과]
+stage  | current_price | ordered_unit_price | line_total_won
+-------+---------------+--------------------+---------------
+before | 30000         | 25000              | 50000         
+(1행)
+
+[실행 SQL]
+UPDATE product
+SET price = 35000
+WHERE id = 2;
+[실제 결과]
+영향받은 행: 1
+
+[실행 SQL]
+SELECT 'after' AS stage, p.price AS current_price,
+       oi.unit_price AS ordered_unit_price, oi.quantity * oi.unit_price AS line_total_won
+FROM product AS p
+INNER JOIN order_item AS oi ON oi.product_id = p.id
+WHERE p.id = 2 AND oi.order_id = 1;
+[실제 결과]
+stage | current_price | ordered_unit_price | line_total_won
+------+---------------+--------------------+---------------
+after | 35000         | 25000              | 50000         
+(1행)
+
+[실행 SQL]
+ROLLBACK;
+[실제 결과]
+실행 완료
+
+[실행 SQL]
+SELECT 'restored' AS stage, id, price FROM product WHERE id = 2;
+[실제 결과]
+stage    | id | price
+---------+----+------
+restored | 2  | 30000
+(1행)
+
+상태: 성공

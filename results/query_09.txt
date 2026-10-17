@@ -1,0 +1,31 @@
+Q09 | AGGREGATE | 회원별 주문 횟수를 구하고 많이 주문한 순서로 정렬한다.
+실행 시각: 2026-10-15T13:58:11+09:00
+SQLite: 3.53.1
+원본: sql/03_queries.sql
+DB: data/shop.db
+
+[실행 SQL]
+-- COUNT(o.id)는 NULL을 제외하므로 주문이 없는 회원의 횟수는 0입니다.
+-- 상세까지 JOIN하면 주문이 반복되므로 여기서는 orders까지만 연결합니다.
+SELECT m.id AS member_id, m.name AS member_name,
+       COUNT(o.id) AS order_count
+FROM member AS m
+LEFT JOIN orders AS o ON o.member_id = m.id
+GROUP BY m.id, m.name
+ORDER BY order_count DESC, m.id ASC;
+[실제 결과]
+member_id | member_name | order_count
+----------+-------------+------------
+1         | 김하늘      | 4          
+2         | 이도윤      | 4          
+3         | 박서연      | 2          
+4         | 최민준      | 2          
+5         | 정지우      | 2          
+6         | 강서준      | 2          
+7         | 윤수아      | 2          
+8         | 임예준      | 2          
+9         | 한지민      | 0          
+10        | 오유진      | 0          
+(10행)
+
+상태: 성공

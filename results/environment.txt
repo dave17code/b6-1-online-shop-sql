@@ -1,0 +1,11 @@
+B6-1 실행 환경
+기록 시각: 2026-10-15T13:58:11+09:00
+운영체제: Linux 6.18.44
+Python: 3.12.14
+SQLite: 3.53.1
+DB: data/shop.db
+현재 연결의 foreign_keys: 1
+member: 10행
+product: 12행
+orders: 20행
+order_item: 40행

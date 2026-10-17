@@ -1,0 +1,28 @@
+Q07 | JOIN | 네 테이블을 연결하여 회원 1번의 구매 내역을 조회한다.
+실행 시각: 2026-10-15T13:58:11+09:00
+SQLite: 3.53.1
+원본: sql/03_queries.sql
+DB: data/shop.db
+
+[실행 SQL]
+SELECT m.name AS member_name, o.id AS order_id, o.ordered_at,
+       p.name AS product_name, oi.quantity, oi.unit_price
+FROM member AS m
+INNER JOIN orders AS o ON o.member_id = m.id
+INNER JOIN order_item AS oi ON oi.order_id = o.id
+INNER JOIN product AS p ON p.id = oi.product_id
+WHERE m.id = 1
+ORDER BY o.id, oi.id;
+[실제 결과]
+member_name | order_id | ordered_at          | product_name    | quantity | unit_price
+------------+----------+---------------------+-----------------+----------+-----------
+김하늘      | 1        | 2026-09-01 10:00:00 | 기계식 키보드   | 1        | 69000     
+김하늘      | 1        | 2026-09-01 10:00:00 | 무선 마우스     | 2        | 25000     
+김하늘      | 4        | 2026-09-04 13:00:00 | 외장 SSD        | 1        | 119000    
+김하늘      | 12       | 2026-09-12 15:00:00 | 무선 마우스     | 2        | 30000     
+김하늘      | 12       | 2026-09-12 15:00:00 | 마우스 패드     | 3        | 12000     
+김하늘      | 19       | 2026-09-19 10:00:00 | 블루투스 스피커 | 1        | 48000     
+김하늘      | 19       | 2026-09-19 10:00:00 | USB-C 케이블    | 1        | 9000      
+(7행)
+
+상태: 성공

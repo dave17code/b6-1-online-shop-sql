@@ -1,0 +1,21 @@
+Q01 | BASIC | 50,000원 이상 상품을 낮은 가격부터 조회한다.
+실행 시각: 2026-10-15T13:58:11+09:00
+SQLite: 3.53.1
+원본: sql/03_queries.sql
+DB: data/shop.db
+
+[실행 SQL]
+SELECT id, name, price
+FROM product
+WHERE price >= 50000
+ORDER BY price ASC, id ASC;
+[실제 결과]
+id | name          | price 
+---+---------------+-------
+6  | 웹캠          | 55000 
+1  | 기계식 키보드 | 69000 
+5  | 모니터 암     | 75000 
+9  | 외장 SSD      | 129000
+(4행)
+
+상태: 성공

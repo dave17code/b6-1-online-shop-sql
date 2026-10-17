@@ -1,0 +1,31 @@
+Q11 | AGGREGATE | 판매된 상품별 주문 상세 한 건당 평균 구매 수량을 구한다.
+실행 시각: 2026-10-15T13:58:11+09:00
+SQLite: 3.53.1
+원본: sql/03_queries.sql
+DB: data/shop.db
+
+[실행 SQL]
+-- 평균의 단위는 '주문 상세 한 건'이며, 회원별 평균이나 전체 판매량이 아닙니다.
+SELECT p.id AS product_id, p.name AS product_name,
+       COUNT(oi.id) AS item_count,
+       ROUND(AVG(oi.quantity), 2) AS avg_quantity_per_item
+FROM product AS p
+INNER JOIN order_item AS oi ON oi.product_id = p.id
+GROUP BY p.id, p.name
+ORDER BY p.id;
+[실제 결과]
+product_id | product_name    | item_count | avg_quantity_per_item
+-----------+-----------------+------------+----------------------
+1          | 기계식 키보드   | 3          | 1.00                 
+2          | 무선 마우스     | 5          | 1.40                 
+3          | USB-C 허브      | 4          | 1.25                 
+4          | 노트북 거치대   | 3          | 1.33                 
+5          | 모니터 암       | 2          | 1.00                 
+6          | 웹캠            | 3          | 1.00                 
+7          | 마우스 패드     | 5          | 1.80                 
+8          | 블루투스 스피커 | 3          | 1.33                 
+9          | 외장 SSD        | 3          | 1.00                 
+10         | USB-C 케이블    | 9          | 2.00                 
+(10행)
+
+상태: 성공

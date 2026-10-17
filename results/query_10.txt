@@ -1,0 +1,33 @@
+Q10 | AGGREGATE | 상품별 누적 판매 수량과 주문 금액 합계를 구한다.
+실행 시각: 2026-10-15T13:58:11+09:00
+SQLite: 3.53.1
+원본: sql/03_queries.sql
+DB: data/shop.db
+
+[실행 SQL]
+-- COALESCE는 판매가 없는 상품의 SUM 결과 NULL을 0으로 표시합니다.
+SELECT p.id AS product_id, p.name AS product_name,
+       COALESCE(SUM(oi.quantity), 0) AS total_quantity,
+       COALESCE(SUM(oi.quantity * oi.unit_price), 0) AS total_amount_won
+FROM product AS p
+LEFT JOIN order_item AS oi ON oi.product_id = p.id
+GROUP BY p.id, p.name
+ORDER BY total_amount_won DESC, p.id ASC;
+[실제 결과]
+product_id | product_name     | total_quantity | total_amount_won
+-----------+------------------+----------------+-----------------
+9          | 외장 SSD         | 3              | 377000          
+3          | USB-C 허브       | 5              | 225000          
+1          | 기계식 키보드    | 3              | 207000          
+2          | 무선 마우스      | 7              | 200000          
+8          | 블루투스 스피커  | 4              | 192000          
+6          | 웹캠             | 3              | 165000          
+10         | USB-C 케이블     | 18             | 162000          
+5          | 모니터 암        | 2              | 150000          
+4          | 노트북 거치대    | 4              | 112000          
+7          | 마우스 패드      | 9              | 108000          
+11         | LED 데스크 조명  | 0              | 0               
+12         | 케이블 정리 홀더 | 0              | 0               
+(12행)
+
+상태: 성공
