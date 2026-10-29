@@ -5,7 +5,6 @@ SQL을 직접 입력하고 실행하는 프로젝트입니다. 설명 문서는 
 
 ## 1. VS Code에서 시작하기 🔎
 
-기존 한글 테이블 버전과 섞이지 않도록 **새 폴더에 압축을 풀고 이 README가 있는 프로젝트 폴더를 엽니다.**
 실습 DB는 **data/shop.db 하나**이고 샘플 데이터와 필수 인덱스가 준비되어 있습니다.
 
 1. 실행용 확장 `@id:alexcvzz.vscode-sqlite`와 뷰어 `@id:qwtel.sqlite-viewer`를 설치합니다.
