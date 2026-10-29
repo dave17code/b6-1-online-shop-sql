@@ -1,8 +1,6 @@
--- sqlite
--- Type SQL here. Reference answers are in the sql folder.
--- First choose SQLite: Use Database -> data/shop.db.
--- Select a complete block, then run SQLite: Run Selected Query.
--- Start with 01_schema.sql to practice table creation, or Q01 to practice queries.
--- Refresh or reopen the viewer after INSERT, UPDATE, or DELETE.
--- Execute all of 04_reset.sql when finished.
-
+-- Type the current query below and save this file.
+-- Start the SQL shell: py main.py shell
+-- Execute this saved file inside the shell: .read practice.sql
+-- The entire saved file is executed, not an editor selection.
+-- Restore original data: .read sql/04_reset.sql
+-- Exit the shell: .quit
