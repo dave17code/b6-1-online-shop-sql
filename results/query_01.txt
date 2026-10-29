@@ -1,17 +1,23 @@
-Q01 | BASIC | 50,000원 이상 상품을 낮은 가격순으로 조회한다.
-실행 시각: 2026-10-29T13:26:33+09:00
-SQLite: 3.53.4
-원본: sql/03_queries.sql
-DB: data/shop.db
+Q01 | BASIC | List products priced at least 2000 KRW from lowest to highest.
+Recorded: 2026-10-29T14:33:22+09:00
+SQLite: 3.53.1
+Database: data/shop.db
+Source: sql/03_queries.sql
+Order: Q01 to Q15 from the original sample data
 
-[실행 SQL]
-SELECT id, name, price
-FROM product
-WHERE price >= 50000
-ORDER BY price ASC, id ASC;
-[실제 결과]
-id | name | price
----+------+------
-(0행)
+[SQL]
+SELECT product_id, product_name, price
+FROM products
+WHERE price >= 2000
+ORDER BY price, product_id;
+[RESULT]
+| product_id | product_name | price |
+| --- | --- | --- |
+| 2 | Notebook | 2000 |
+| 10 | Tape | 2500 |
+| 7 | Scissors | 3000 |
+| 9 | Colored Pencil | 4000 |
+| 6 | Pen Case | 5000 |
+5 row(s)
 
-상태: 성공
+Status: SUCCESS

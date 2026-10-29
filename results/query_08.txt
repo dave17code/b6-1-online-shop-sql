@@ -1,18 +1,30 @@
-Q08 | JOIN | 주문 이력이 없는 회원까지 포함하여 전체 회원의 주문 내역을 조회한다.
-실행 시각: 2026-10-29T13:26:33+09:00
-SQLite: 3.53.4
-원본: sql/03_queries.sql
-DB: data/shop.db
+Q08 | JOIN | Include customers who have never placed an order.
+Recorded: 2026-10-29T14:33:22+09:00
+SQLite: 3.53.1
+Database: data/shop.db
+Source: sql/03_queries.sql
+Order: Q01 to Q15 from the original sample data
 
-[실행 SQL]
-SELECT m.id AS member_id, m.name AS member_name,
-       o.id AS order_id, o.ordered_at
-FROM member AS m
-LEFT JOIN orders AS o ON o.member_id = m.id
-ORDER BY m.id ASC, o.id ASC;
-[실제 결과]
-member_id | member_name | order_id | ordered_at
-----------+-------------+----------+-----------
-(0행)
+[SQL]
+SELECT customer_id, customer_name, order_id
+FROM customers
+LEFT JOIN orders USING (customer_id)
+ORDER BY customer_id, order_id;
+[RESULT]
+| customer_id | customer_name | order_id |
+| --- | --- | --- |
+| 1 | 김가람 | 1 |
+| 1 | 김가람 | 4 |
+| 2 | 이나래 | 2 |
+| 2 | 이나래 | 7 |
+| 3 | 박다온 | 3 |
+| 4 | 최라온 | 5 |
+| 5 | 정마루 | 6 |
+| 6 | 강바다 | 8 |
+| 7 | 윤보라 | 9 |
+| 8 | 임아람 | 10 |
+| 9 | 한이든 | NULL |
+| 10 | 오하늘 | NULL |
+12 row(s)
 
-상태: 성공
+Status: SUCCESS

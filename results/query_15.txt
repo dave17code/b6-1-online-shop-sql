@@ -1,24 +1,25 @@
-Q15 | INDEX | 특정 회원의 주문 내역을 빠르게 검색하기 위해 인덱스를 생성한다.
-실행 시각: 2026-10-29T13:26:33+09:00
-SQLite: 3.53.4
-원본: sql/03_queries.sql
-DB: data/shop.db
+Q15 | INDEX | Create an index for looking up orders by customer_id.
+Recorded: 2026-10-29T14:33:22+09:00
+SQLite: 3.53.1
+Database: data/shop.db
+Source: sql/03_queries.sql
+Order: Q01 to Q15 from the original sample data
 
-[실행 SQL]
--- 적용 이유: orders.member_id 조건 검색 및 member 테이블과의 JOIN 속도를 높이기 위해 적용한다.
-CREATE INDEX IF NOT EXISTS idx_orders_member_id ON orders(member_id);
-[실제 결과]
-실행 완료
+[SQL]
+-- Reason: support customer_id filters and joins between orders and customers.
+-- SQLite-specific: sqlite_master is used only to confirm the index.
+CREATE INDEX IF NOT EXISTS orders_customer_id_index ON orders(customer_id);
+[RESULT]
+Statement completed
 
-[실행 SQL]
-EXPLAIN QUERY PLAN
-SELECT id, member_id, ordered_at
-FROM orders
-WHERE member_id = 1;
-[실제 결과]
-id | parent | notused | detail                                                      
----+--------+---------+-------------------------------------------------------------
-3  | 0      | 61      | SEARCH orders USING INDEX idx_orders_member_id (member_id=?)
-(1행)
+[SQL]
+SELECT name AS index_name, tbl_name AS table_name
+FROM sqlite_master
+WHERE name = 'orders_customer_id_index';
+[RESULT]
+| index_name | table_name |
+| --- | --- |
+| orders_customer_id_index | orders |
+1 row(s)
 
-상태: 성공
+Status: SUCCESS

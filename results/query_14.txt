@@ -1,39 +1,29 @@
-Q14 | DELETE | 주문 상세 40번 데이터를 삭제하고 전체 행 수 변화를 확인한다.
-실행 시각: 2026-10-29T13:26:33+09:00
-SQLite: 3.53.4
-원본: sql/03_queries.sql
-DB: data/shop.db
+Q14 | DELETE | Delete the incorrect order-item row numbered 4.
+Recorded: 2026-10-29T14:33:22+09:00
+SQLite: 3.53.1
+Database: data/shop.db
+Source: sql/03_queries.sql
+Order: Q01 to Q15 from the original sample data
 
-[실행 SQL]
-BEGIN;
-[실제 결과]
-실행 완료
+[SQL]
+-- SQLite-specific: enable foreign keys for this selected block. Changes are saved.
+PRAGMA foreign_keys = ON;
+[RESULT]
+Statement completed
 
-[실행 SQL]
-SELECT '삭제 전' AS stage, COUNT(*) AS total_rows FROM order_item;
-[실제 결과]
-stage   | total_rows
---------+-----------
-삭제 전 | 0         
-(1행)
+[SQL]
+DELETE FROM order_items
+WHERE order_item_id = 4;
+[RESULT]
+1 row(s) affected
 
-[실행 SQL]
-DELETE FROM order_item
-WHERE id = 40;
-[실제 결과]
-영향받은 행: 0
+[SQL]
+SELECT COUNT(*) AS remaining_items
+FROM order_items;
+[RESULT]
+| remaining_items |
+| --- |
+| 11 |
+1 row(s)
 
-[실행 SQL]
-SELECT '삭제 후' AS stage, COUNT(*) AS total_rows FROM order_item;
-[실제 결과]
-stage   | total_rows
---------+-----------
-삭제 후 | 0         
-(1행)
-
-[실행 SQL]
-ROLLBACK;
-[실제 결과]
-실행 완료
-
-상태: 성공
+Status: SUCCESS

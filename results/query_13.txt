@@ -1,38 +1,31 @@
-Q13 | UPDATE | 2번 상품(무선 마우스)의 가격을 35,000원으로 수정하고 변경 결과를 확인한다.
-실행 시각: 2026-10-29T13:26:33+09:00
-SQLite: 3.53.4
-원본: sql/03_queries.sql
-DB: data/shop.db
+Q13 | UPDATE | Change the current price of Pencil from 1000 to 1200 KRW.
+Recorded: 2026-10-29T14:33:22+09:00
+SQLite: 3.53.1
+Database: data/shop.db
+Source: sql/03_queries.sql
+Order: Q01 to Q15 from the original sample data
 
-[실행 SQL]
-BEGIN;
-[실제 결과]
-실행 완료
+[SQL]
+-- SQLite-specific: enable foreign keys for this selected block. Changes are saved.
+PRAGMA foreign_keys = ON;
+[RESULT]
+Statement completed
 
-[실행 SQL]
-SELECT '수정 전' AS stage, id, name, price FROM product WHERE id = 2;
-[실제 결과]
-stage | id | name | price
-------+----+------+------
-(0행)
+[SQL]
+UPDATE products
+SET price = 1200
+WHERE product_id = 1;
+[RESULT]
+1 row(s) affected
 
-[실행 SQL]
-UPDATE product
-SET price = 35000
-WHERE id = 2;
-[실제 결과]
-영향받은 행: 0
+[SQL]
+SELECT product_id, product_name, price
+FROM products
+WHERE product_id = 1;
+[RESULT]
+| product_id | product_name | price |
+| --- | --- | --- |
+| 1 | Pencil | 1200 |
+1 row(s)
 
-[실행 SQL]
-SELECT '수정 후' AS stage, id, name, price FROM product WHERE id = 2;
-[실제 결과]
-stage | id | name | price
-------+----+------+------
-(0행)
-
-[실행 SQL]
-ROLLBACK;
-[실제 결과]
-실행 완료
-
-상태: 성공
+Status: SUCCESS

@@ -1,0 +1,58 @@
+B6-1 English SQL validation
+Recorded: 2026-10-29T14:33:22+09:00
+SQLite: 3.53.1
+Customer name values remain in Korean; identifiers and product values are English.
+Constraint probes run on an in-memory copy. Packaged database is restored to its original state.
+
+[PASS] Four English table names - customers, products, orders, order_items
+[PASS] At least ten rows per table - 10 / 10 / 10 / 12
+[PASS] Primary key in every table - customer_id, product_id, order_id, order_item_id
+[PASS] All table and column identifiers are English - ASCII snake_case identifiers
+[PASS] Korean customer names preserved - All ten original Korean names preserved
+[PASS] Product names are English - Pencil, Notebook, Eraser, Pen, Ruler, Pen Case, Scissors, Glue, Colored Pencil, Tape
+[PASS] Three one-to-many foreign keys - Parent/child columns match
+[PASS] Foreign keys enabled - foreign_keys = 1
+[PASS] No foreign key violations - 0 violations
+[PASS] Duplicate PK rejected - Tested on an in-memory copy
+[PASS] NULL customer name rejected - Tested on an in-memory copy
+[PASS] Duplicate email rejected - Tested on an in-memory copy
+[PASS] Missing customer rejected - Tested on an in-memory copy
+[PASS] Missing order rejected - Tested on an in-memory copy
+[PASS] Missing product rejected - Tested on an in-memory copy
+[PASS] Fifteen documented queries - Q01-Q15
+[PASS] Required query categories - 4 + 4 + 3 + 1 + 2 + 1
+[PASS] Required joins and aggregates - INNER, LEFT, GROUP BY, COUNT, SUM, AVG
+[PASS] Q01 executes with English headers - List products priced at least 2000 KRW from lowest to highest.
+[PASS] Q02 executes with English headers - List products priced between 1000 and 2000 KRW.
+[PASS] Q03 executes with English headers - Find product names containing Pencil.
+[PASS] Q04 executes with English headers - List the five most recent orders.
+[PASS] Q05 executes with English headers - Show each order with its customer name.
+[PASS] Q06 executes with English headers - Show products and item totals for order 1.
+[PASS] Q07 executes with English headers - Join four tables to show purchases by customer 1.
+[PASS] Q08 executes with English headers - Include customers who have never placed an order.
+[PASS] Q09 executes with English headers - Count orders per customer, including zero orders.
+[PASS] Q10 executes with English headers - Add quantities and historical amounts for each sold product.
+[PASS] Q11 executes with English headers - Find the average quantity per order-item row for each sold product.
+[PASS] Q12 executes with English headers - Find products priced above the average product price.
+[PASS] Q13 executes with English headers - Change the current price of Pencil from 1000 to 1200 KRW.
+[PASS] UPDATE persists across connections and preserves historical totals - Current price 1200; order 1 total remains 4000
+[PASS] Q14 executes with English headers - Delete the incorrect order-item row numbered 4.
+[PASS] DELETE persists and minimum row counts remain valid - 10 / 10 / 10 / 11
+[PASS] Q15 executes with English headers - Create an index for looking up orders by customer_id.
+[PASS] Basic filter, range, search and limit results - Original numeric results preserved after translation
+[PASS] Customer joins and four-table join results - Korean names join correctly
+[PASS] Order item totals - Order 1 total: 4000
+[PASS] LEFT JOIN and zero-order counts - Two customers have zero orders
+[PASS] Sales quantities and historical amounts - 19 units, 27000 KRW, 8 sold products
+[PASS] Average quantities - Average per order-item row
+[PASS] Subquery result - Average price 2150 KRW
+[PASS] UPDATE and DELETE result tables - Updated price and remaining_items
+[PASS] Required index exists - orders(customer_id)
+[PASS] Reset restores all original rows and schema - All 44 rows, PK/FK/UNIQUE and required index restored
+[PASS] Reset is repeatable - Integrity ok; 0 foreign key violations
+[PASS] English-only database identifiers - Includes indexes
+[PASS] Three required SQL files execute in order - 01 -> 02 -> 03 on a new database
+[PASS] No advanced features - No views, triggers, procedures or backend framework
+[PASS] English filenames and result evidence - 15 actual execution result files
+
+50 / 50 checks passed.

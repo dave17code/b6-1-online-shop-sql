@@ -1,17 +1,22 @@
-Q12 | SUBQUERY | 전체 상품의 평균 가격보다 비싼 상품을 조회한다.
-실행 시각: 2026-10-29T13:26:33+09:00
-SQLite: 3.53.4
-원본: sql/03_queries.sql
-DB: data/shop.db
+Q12 | SUBQUERY | Find products priced above the average product price.
+Recorded: 2026-10-29T14:33:22+09:00
+SQLite: 3.53.1
+Database: data/shop.db
+Source: sql/03_queries.sql
+Order: Q01 to Q15 from the original sample data
 
-[실행 SQL]
-SELECT id, name, price
-FROM product
-WHERE price > (SELECT AVG(price) FROM product)
-ORDER BY price DESC, id ASC;
-[실제 결과]
-id | name | price
----+------+------
-(0행)
+[SQL]
+SELECT product_id, product_name, price
+FROM products
+WHERE price > (SELECT AVG(price) FROM products)
+ORDER BY price DESC, product_id;
+[RESULT]
+| product_id | product_name | price |
+| --- | --- | --- |
+| 6 | Pen Case | 5000 |
+| 9 | Colored Pencil | 4000 |
+| 7 | Scissors | 3000 |
+| 10 | Tape | 2500 |
+4 row(s)
 
-상태: 성공
+Status: SUCCESS

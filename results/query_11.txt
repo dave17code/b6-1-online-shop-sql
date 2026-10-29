@@ -1,20 +1,27 @@
-Q11 | AGGREGATE | 판매된 상품별로 주문 상세 1건당 평균 구매 수량을 구한다.
-실행 시각: 2026-10-29T13:26:33+09:00
-SQLite: 3.53.4
-원본: sql/03_queries.sql
-DB: data/shop.db
+Q11 | AGGREGATE | Find the average quantity per order-item row for each sold product.
+Recorded: 2026-10-29T14:33:22+09:00
+SQLite: 3.53.1
+Database: data/shop.db
+Source: sql/03_queries.sql
+Order: Q01 to Q15 from the original sample data
 
-[실행 SQL]
-SELECT p.id AS product_id, p.name AS product_name,
-       COUNT(oi.id) AS order_item_count,
-       ROUND(AVG(oi.quantity), 2) AS avg_quantity
-FROM product AS p
-INNER JOIN order_item AS oi ON oi.product_id = p.id
-GROUP BY p.id, p.name
-ORDER BY p.id ASC;
-[실제 결과]
-product_id | product_name | order_item_count | avg_quantity
------------+--------------+------------------+-------------
-(0행)
+[SQL]
+SELECT product_name, AVG(quantity) AS average_quantity
+FROM products
+INNER JOIN order_items USING (product_id)
+GROUP BY product_id, product_name
+ORDER BY product_id;
+[RESULT]
+| product_name | average_quantity |
+| --- | --- |
+| Pencil | 1.5 |
+| Notebook | 1.5 |
+| Eraser | 2 |
+| Pen | 2 |
+| Ruler | 1 |
+| Pen Case | 1 |
+| Scissors | 1 |
+| Glue | 2 |
+8 row(s)
 
-상태: 성공
+Status: SUCCESS

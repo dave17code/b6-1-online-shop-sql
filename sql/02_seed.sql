@@ -1,124 +1,58 @@
--- B6-1 | 핵심 SQL 쿼리 15개 (Q01 ~ Q15)
--- 구성: 기본 조회 4개 / 조인 4개 / 집계 3개 / 서브쿼리 1개 / 수정 및 삭제 2개 / 인덱스 1개
--- [SQLite 전용 문법 안내]
--- PRAGMA foreign_keys = ON, CREATE INDEX IF NOT EXISTS, EXPLAIN QUERY PLAN은 SQLite 문법입니다.
--- Q13(UPDATE)과 Q14(DELETE)는 변경 전후를 확인한 뒤 ROLLBACK하여 언제든 반복 실행할 수 있습니다.
-
+-- sqlite
+-- 10 customers, 10 products, 10 orders, 12 order items.
+-- Insert parents before children. Customer names remain in Korean.
+-- Customers 9 and 10 have no orders. Products 9 and 10 have no sales.
+-- SQLite-specific: enable foreign keys for this connection.
 PRAGMA foreign_keys = ON;
 
--- Q01 | BASIC | 50,000원 이상 상품을 낮은 가격순으로 조회한다.
-SELECT id, name, price
-FROM product
-WHERE price >= 50000
-ORDER BY price ASC, id ASC;
+INSERT INTO customers (customer_id, customer_name, email) VALUES
+    (1, '김가람', 'user1@shop.test'),
+    (2, '이나래', 'user2@shop.test'),
+    (3, '박다온', 'user3@shop.test'),
+    (4, '최라온', 'user4@shop.test'),
+    (5, '정마루', 'user5@shop.test'),
+    (6, '강바다', 'user6@shop.test'),
+    (7, '윤보라', 'user7@shop.test'),
+    (8, '임아람', 'user8@shop.test'),
+    (9, '한이든', 'user9@shop.test'),
+    (10, '오하늘', 'user10@shop.test');
 
--- Q02 | BASIC | 가격이 20,000원 이상 50,000원 이하인 상품을 조회한다.
-SELECT id, name, price
-FROM product
-WHERE price BETWEEN 20000 AND 50000
-ORDER BY id ASC;
+INSERT INTO products (product_id, product_name, price) VALUES
+    (1, 'Pencil', 1000),
+    (2, 'Notebook', 2000),
+    (3, 'Eraser', 500),
+    (4, 'Pen', 1500),
+    (5, 'Ruler', 1000),
+    (6, 'Pen Case', 5000),
+    (7, 'Scissors', 3000),
+    (8, 'Glue', 1000),
+    (9, 'Colored Pencil', 4000),
+    (10, 'Tape', 2500);
 
--- Q03 | BASIC | 상품명에 'USB'가 포함된 상품을 검색한다.
-SELECT id, name, price
-FROM product
-WHERE name LIKE '%USB%'
-ORDER BY id ASC;
+INSERT INTO orders (order_id, customer_id, order_date) VALUES
+    (1, 1, '2026-01-01'),
+    (2, 2, '2026-01-02'),
+    (3, 3, '2026-01-03'),
+    (4, 1, '2026-01-04'),
+    (5, 4, '2026-01-05'),
+    (6, 5, '2026-01-06'),
+    (7, 2, '2026-01-07'),
+    (8, 6, '2026-01-08'),
+    (9, 7, '2026-01-09'),
+    (10, 8, '2026-01-10');
 
--- Q04 | BASIC | 가장 최근에 들어온 주문 5건을 조회한다.
-SELECT id, member_id, ordered_at
-FROM orders
-ORDER BY ordered_at DESC, id DESC
-LIMIT 5;
-
--- Q05 | JOIN | 주문 목록과 주문한 회원의 이름을 함께 조회한다.
-SELECT o.id AS order_id, m.name AS member_name, o.ordered_at
-FROM orders AS o
-INNER JOIN member AS m ON m.id = o.member_id
-ORDER BY o.id ASC;
-
--- Q06 | JOIN | 주문 1번에 담긴 상품명, 상품 가격, 주문 수량, 항목별 합계 금액을 조회한다.
-SELECT oi.order_id, p.name AS product_name, p.price, oi.quantity,
-       p.price * oi.quantity AS item_total_price
-FROM order_item AS oi
-INNER JOIN product AS p ON p.id = oi.product_id
-WHERE oi.order_id = 1
-ORDER BY oi.id ASC;
-
--- Q07 | JOIN | 4개 테이블을 모두 연결하여 1번 회원(김하늘)의 전체 구매 내역을 조회한다.
-SELECT m.name AS member_name, o.id AS order_id, o.ordered_at,
-       p.name AS product_name, p.price, oi.quantity
-FROM member AS m
-INNER JOIN orders AS o ON o.member_id = m.id
-INNER JOIN order_item AS oi ON oi.order_id = o.id
-INNER JOIN product AS p ON p.id = oi.product_id
-WHERE m.id = 1
-ORDER BY o.id ASC, oi.id ASC;
-
--- Q08 | JOIN | 주문 이력이 없는 회원까지 포함하여 전체 회원의 주문 내역을 조회한다.
-SELECT m.id AS member_id, m.name AS member_name,
-       o.id AS order_id, o.ordered_at
-FROM member AS m
-LEFT JOIN orders AS o ON o.member_id = m.id
-ORDER BY m.id ASC, o.id ASC;
-
--- Q09 | AGGREGATE | 회원별 총 주문 횟수를 구하고 주문이 많은 순서로 정렬한다.
-SELECT m.id AS member_id, m.name AS member_name,
-       COUNT(o.id) AS order_count
-FROM member AS m
-LEFT JOIN orders AS o ON o.member_id = m.id
-GROUP BY m.id, m.name
-ORDER BY order_count DESC, m.id ASC;
-
--- Q10 | AGGREGATE | 상품별 누적 판매 수량과 총 판매 금액 합계를 구한다.
-SELECT p.id AS product_id, p.name AS product_name,
-       COALESCE(SUM(oi.quantity), 0) AS total_quantity,
-       COALESCE(SUM(p.price * oi.quantity), 0) AS total_sales_amount
-FROM product AS p
-LEFT JOIN order_item AS oi ON oi.product_id = p.id
-GROUP BY p.id, p.name
-ORDER BY total_sales_amount DESC, p.id ASC;
-
--- Q11 | AGGREGATE | 판매된 상품별로 주문 상세 1건당 평균 구매 수량을 구한다.
-SELECT p.id AS product_id, p.name AS product_name,
-       COUNT(oi.id) AS order_item_count,
-       ROUND(AVG(oi.quantity), 2) AS avg_quantity
-FROM product AS p
-INNER JOIN order_item AS oi ON oi.product_id = p.id
-GROUP BY p.id, p.name
-ORDER BY p.id ASC;
-
--- Q12 | SUBQUERY | 전체 상품의 평균 가격보다 비싼 상품을 조회한다.
-SELECT id, name, price
-FROM product
-WHERE price > (SELECT AVG(price) FROM product)
-ORDER BY price DESC, id ASC;
-
--- Q13 | UPDATE | 2번 상품(무선 마우스)의 가격을 35,000원으로 수정하고 변경 결과를 확인한다.
-BEGIN;
-SELECT '수정 전' AS stage, id, name, price FROM product WHERE id = 2;
-
-UPDATE product
-SET price = 35000
-WHERE id = 2;
-
-SELECT '수정 후' AS stage, id, name, price FROM product WHERE id = 2;
-ROLLBACK;
-
--- Q14 | DELETE | 주문 상세 40번 데이터를 삭제하고 전체 행 수 변화를 확인한다.
-BEGIN;
-SELECT '삭제 전' AS stage, COUNT(*) AS total_rows FROM order_item;
-
-DELETE FROM order_item
-WHERE id = 40;
-
-SELECT '삭제 후' AS stage, COUNT(*) AS total_rows FROM order_item;
-ROLLBACK;
-
--- Q15 | INDEX | 특정 회원의 주문 내역을 빠르게 검색하기 위해 인덱스를 생성한다.
--- 적용 이유: orders.member_id 조건 검색 및 member 테이블과의 JOIN 속도를 높이기 위해 적용한다.
-CREATE INDEX IF NOT EXISTS idx_orders_member_id ON orders(member_id);
-
-EXPLAIN QUERY PLAN
-SELECT id, member_id, ordered_at
-FROM orders
-WHERE member_id = 1;
+INSERT INTO order_items
+    (order_item_id, order_id, product_id, quantity, unit_price)
+VALUES
+    (1, 1, 1, 2, 1000),
+    (2, 1, 2, 1, 2000),
+    (3, 2, 3, 2, 500),
+    (4, 2, 4, 2, 1500),
+    (5, 3, 1, 1, 1000),
+    (6, 4, 5, 1, 1000),
+    (7, 5, 6, 1, 5000),
+    (8, 6, 7, 1, 3000),
+    (9, 7, 2, 2, 2000),
+    (10, 8, 8, 3, 1000),
+    (11, 9, 3, 2, 500),
+    (12, 10, 8, 1, 1000);

@@ -1,19 +1,21 @@
-Q06 | JOIN | 주문 1번에 담긴 상품명, 상품 가격, 주문 수량, 항목별 합계 금액을 조회한다.
-실행 시각: 2026-10-29T13:26:33+09:00
-SQLite: 3.53.4
-원본: sql/03_queries.sql
-DB: data/shop.db
+Q06 | JOIN | Show products and item totals for order 1.
+Recorded: 2026-10-29T14:33:22+09:00
+SQLite: 3.53.1
+Database: data/shop.db
+Source: sql/03_queries.sql
+Order: Q01 to Q15 from the original sample data
 
-[실행 SQL]
-SELECT oi.order_id, p.name AS product_name, p.price, oi.quantity,
-       p.price * oi.quantity AS item_total_price
-FROM order_item AS oi
-INNER JOIN product AS p ON p.id = oi.product_id
-WHERE oi.order_id = 1
-ORDER BY oi.id ASC;
-[실제 결과]
-order_id | product_name | price | quantity | item_total_price
----------+--------------+-------+----------+-----------------
-(0행)
+[SQL]
+SELECT product_name, quantity, unit_price, quantity * unit_price AS item_total
+FROM order_items
+INNER JOIN products USING (product_id)
+WHERE order_id = 1
+ORDER BY order_item_id;
+[RESULT]
+| product_name | quantity | unit_price | item_total |
+| --- | --- | --- | --- |
+| Pencil | 2 | 1000 | 2000 |
+| Notebook | 1 | 2000 | 2000 |
+2 row(s)
 
-상태: 성공
+Status: SUCCESS

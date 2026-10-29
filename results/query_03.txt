@@ -1,17 +1,20 @@
-Q03 | BASIC | 상품명에 'USB'가 포함된 상품을 검색한다.
-실행 시각: 2026-10-29T13:26:33+09:00
-SQLite: 3.53.4
-원본: sql/03_queries.sql
-DB: data/shop.db
+Q03 | BASIC | Find product names containing Pencil.
+Recorded: 2026-10-29T14:33:22+09:00
+SQLite: 3.53.1
+Database: data/shop.db
+Source: sql/03_queries.sql
+Order: Q01 to Q15 from the original sample data
 
-[실행 SQL]
-SELECT id, name, price
-FROM product
-WHERE name LIKE '%USB%'
-ORDER BY id ASC;
-[실제 결과]
-id | name | price
----+------+------
-(0행)
+[SQL]
+SELECT product_id, product_name, price
+FROM products
+WHERE product_name LIKE '%Pencil%'
+ORDER BY product_id;
+[RESULT]
+| product_id | product_name | price |
+| --- | --- | --- |
+| 1 | Pencil | 1000 |
+| 9 | Colored Pencil | 4000 |
+2 row(s)
 
-상태: 성공
+Status: SUCCESS

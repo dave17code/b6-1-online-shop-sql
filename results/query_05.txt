@@ -1,17 +1,29 @@
-Q05 | JOIN | 주문 목록과 주문한 회원의 이름을 함께 조회한다.
-실행 시각: 2026-10-29T13:26:33+09:00
-SQLite: 3.53.4
-원본: sql/03_queries.sql
-DB: data/shop.db
+Q05 | JOIN | Show each order with its customer name.
+Recorded: 2026-10-29T14:33:22+09:00
+SQLite: 3.53.1
+Database: data/shop.db
+Source: sql/03_queries.sql
+Order: Q01 to Q15 from the original sample data
 
-[실행 SQL]
-SELECT o.id AS order_id, m.name AS member_name, o.ordered_at
-FROM orders AS o
-INNER JOIN member AS m ON m.id = o.member_id
-ORDER BY o.id ASC;
-[실제 결과]
-order_id | member_name | ordered_at
----------+-------------+-----------
-(0행)
+[SQL]
+-- USING (customer_id) matches equal customer_id values in both tables.
+SELECT order_id, customer_name, order_date
+FROM orders
+INNER JOIN customers USING (customer_id)
+ORDER BY order_id;
+[RESULT]
+| order_id | customer_name | order_date |
+| --- | --- | --- |
+| 1 | 김가람 | 2026-01-01 |
+| 2 | 이나래 | 2026-01-02 |
+| 3 | 박다온 | 2026-01-03 |
+| 4 | 김가람 | 2026-01-04 |
+| 5 | 최라온 | 2026-01-05 |
+| 6 | 정마루 | 2026-01-06 |
+| 7 | 이나래 | 2026-01-07 |
+| 8 | 강바다 | 2026-01-08 |
+| 9 | 윤보라 | 2026-01-09 |
+| 10 | 임아람 | 2026-01-10 |
+10 row(s)
 
-상태: 성공
+Status: SUCCESS

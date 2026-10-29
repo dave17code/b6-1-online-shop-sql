@@ -1,19 +1,30 @@
-Q09 | AGGREGATE | 회원별 총 주문 횟수를 구하고 주문이 많은 순서로 정렬한다.
-실행 시각: 2026-10-29T13:26:33+09:00
-SQLite: 3.53.4
-원본: sql/03_queries.sql
-DB: data/shop.db
+Q09 | AGGREGATE | Count orders per customer, including zero orders.
+Recorded: 2026-10-29T14:33:22+09:00
+SQLite: 3.53.1
+Database: data/shop.db
+Source: sql/03_queries.sql
+Order: Q01 to Q15 from the original sample data
 
-[실행 SQL]
-SELECT m.id AS member_id, m.name AS member_name,
-       COUNT(o.id) AS order_count
-FROM member AS m
-LEFT JOIN orders AS o ON o.member_id = m.id
-GROUP BY m.id, m.name
-ORDER BY order_count DESC, m.id ASC;
-[실제 결과]
-member_id | member_name | order_count
-----------+-------------+------------
-(0행)
+[SQL]
+-- COUNT(order_id) ignores NULL, so a customer without orders has a count of zero.
+SELECT customer_name, COUNT(order_id) AS order_count
+FROM customers
+LEFT JOIN orders USING (customer_id)
+GROUP BY customer_id, customer_name
+ORDER BY order_count DESC, customer_id;
+[RESULT]
+| customer_name | order_count |
+| --- | --- |
+| 김가람 | 2 |
+| 이나래 | 2 |
+| 박다온 | 1 |
+| 최라온 | 1 |
+| 정마루 | 1 |
+| 강바다 | 1 |
+| 윤보라 | 1 |
+| 임아람 | 1 |
+| 한이든 | 0 |
+| 오하늘 | 0 |
+10 row(s)
 
-상태: 성공
+Status: SUCCESS

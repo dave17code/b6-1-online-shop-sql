@@ -1,17 +1,23 @@
-Q02 | BASIC | 가격이 20,000원 이상 50,000원 이하인 상품을 조회한다.
-실행 시각: 2026-10-29T13:26:33+09:00
-SQLite: 3.53.4
-원본: sql/03_queries.sql
-DB: data/shop.db
+Q02 | BASIC | List products priced between 1000 and 2000 KRW.
+Recorded: 2026-10-29T14:33:22+09:00
+SQLite: 3.53.1
+Database: data/shop.db
+Source: sql/03_queries.sql
+Order: Q01 to Q15 from the original sample data
 
-[실행 SQL]
-SELECT id, name, price
-FROM product
-WHERE price BETWEEN 20000 AND 50000
-ORDER BY id ASC;
-[실제 결과]
-id | name | price
----+------+------
-(0행)
+[SQL]
+SELECT product_id, product_name, price
+FROM products
+WHERE price BETWEEN 1000 AND 2000
+ORDER BY product_id;
+[RESULT]
+| product_id | product_name | price |
+| --- | --- | --- |
+| 1 | Pencil | 1000 |
+| 2 | Notebook | 2000 |
+| 4 | Pen | 1500 |
+| 5 | Ruler | 1000 |
+| 8 | Glue | 1000 |
+5 row(s)
 
-상태: 성공
+Status: SUCCESS

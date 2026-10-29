@@ -1,17 +1,24 @@
-Q04 | BASIC | 가장 최근에 들어온 주문 5건을 조회한다.
-실행 시각: 2026-10-29T13:26:33+09:00
-SQLite: 3.53.4
-원본: sql/03_queries.sql
-DB: data/shop.db
+Q04 | BASIC | List the five most recent orders.
+Recorded: 2026-10-29T14:33:22+09:00
+SQLite: 3.53.1
+Database: data/shop.db
+Source: sql/03_queries.sql
+Order: Q01 to Q15 from the original sample data
 
-[실행 SQL]
-SELECT id, member_id, ordered_at
+[SQL]
+-- LIMIT is supported by SQLite, MySQL, and PostgreSQL.
+SELECT order_id, customer_id, order_date
 FROM orders
-ORDER BY ordered_at DESC, id DESC
+ORDER BY order_date DESC, order_id DESC
 LIMIT 5;
-[실제 결과]
-id | member_id | ordered_at
----+-----------+-----------
-(0행)
+[RESULT]
+| order_id | customer_id | order_date |
+| --- | --- | --- |
+| 10 | 8 | 2026-01-10 |
+| 9 | 7 | 2026-01-09 |
+| 8 | 6 | 2026-01-08 |
+| 7 | 2 | 2026-01-07 |
+| 6 | 5 | 2026-01-06 |
+5 row(s)
 
-상태: 성공
+Status: SUCCESS

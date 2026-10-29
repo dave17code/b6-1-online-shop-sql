@@ -1,20 +1,9 @@
-# 실행 결과 자료
+# 실제 실행 결과 ✅
 
-- `query_01.txt`~`query_15.txt`: 한 줄 목적, 실제 실행 SQL, 실제 결과와 성공 여부.
-- `environment.txt`: 생성 시각, OS, Python/SQLite 버전, 연결의 FK 설정, 현재 행 수.
-- `validation.txt`: 현재 DB의 구조/제약조건과 기준 SQL 실행 결과에 대한 검증 보고서.
-
-동봉된 결과는 제작 환경의 실제 실행 기록입니다. 자신의 컴퓨터에서 다음 명령으로 갱신할 수 있습니다.
-
-```bash
-py main.py run all
-py main.py check
-```
-
-macOS에서는 `py` 대신 `python3`를 사용합니다. 명령은 프로젝트 최상위에서 실행하세요.
-쿼리 하나만 실행하면 그 결과 파일만 갱신되므로, 제출 전에는 `run all`로 같은 상태의 전체 결과를 만드세요.
-SQL/실습 데이터를 직접 수정했다면 원본과 결과가 달라질 수 있습니다.
-
-Q13/Q14의 `after`는 실제 변경 후 결과이고 `restored`는 ROLLBACK 후의 결과입니다.
-Q15의 PRAGMA와 실행 계획은 SQLite 버전에 따라 표시 문구가 다를 수 있습니다.
-미션은 결과 텍스트를 허용하므로 이 폴더를 실행 결과 자료로 사용할 수 있습니다.
+query_01.txt부터 query_15.txt는 영어 SQL을 원본 데이터에서 순서대로 실제 실행한 결과입니다.
+SQL 식별자·결과 열·상품명은 영어이며, customer_name 값은 한글입니다.
+금액 단위는 원이고, average_quantity는 order_items 한 행당 수량의 평균입니다.
+Q13 이후 Pencil 가격은 1200원, Q14 이후 order_items는 11행입니다.
+결과 수집 후 배포 DB는 customers 10 / products 10 / orders 10 / order_items 12행과 필수 인덱스로 복원했습니다.
+validation.txt에는 제약조건·15개 쿼리·수정/삭제 유지·원본 복원 검증이 기록되어 있습니다.
+직접 실습한 SQL과 결과는 캡처나 CSV로 내보내 이 폴더에 보관하세요.
