@@ -1,6 +1,6 @@
-Q12 | SUBQUERY | 전체 상품의 평균 현재 가격보다 비싼 상품을 조회한다.
-실행 시각: 2026-10-15T13:58:11+09:00
-SQLite: 3.53.1
+Q12 | SUBQUERY | 전체 상품의 평균 가격보다 비싼 상품을 조회한다.
+실행 시각: 2026-10-29T13:26:33+09:00
+SQLite: 3.53.4
 원본: sql/03_queries.sql
 DB: data/shop.db
 
@@ -10,13 +10,8 @@ FROM product
 WHERE price > (SELECT AVG(price) FROM product)
 ORDER BY price DESC, id ASC;
 [실제 결과]
-id | name            | price 
----+-----------------+-------
-9  | 외장 SSD        | 129000
-5  | 모니터 암       | 75000 
-1  | 기계식 키보드   | 69000 
-6  | 웹캠            | 55000 
-8  | 블루투스 스피커 | 48000 
-(5행)
+id | name | price
+---+------+------
+(0행)
 
 상태: 성공

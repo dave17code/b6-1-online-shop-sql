@@ -1,102 +1,124 @@
--- B6-1 | 재현 가능한 가상 데이터: 회원 10 / 상품 12 / 주문 20 / 상세 40행
--- 부모(member, product) -> orders -> order_item 순서로 입력합니다.
--- 회원 9, 10은 주문 없음 / 상품 11, 12는 판매 없음: LEFT JOIN 실습용.
--- 날짜는 고정값을 사용하므로 실행하는 날이 달라도 결과가 같습니다.
--- SQLite 전용 설정: 연결마다 FK 검사 활성화.
+-- B6-1 | 핵심 SQL 쿼리 15개 (Q01 ~ Q15)
+-- 구성: 기본 조회 4개 / 조인 4개 / 집계 3개 / 서브쿼리 1개 / 수정 및 삭제 2개 / 인덱스 1개
+-- [SQLite 전용 문법 안내]
+-- PRAGMA foreign_keys = ON, CREATE INDEX IF NOT EXISTS, EXPLAIN QUERY PLAN은 SQLite 문법입니다.
+-- Q13(UPDATE)과 Q14(DELETE)는 변경 전후를 확인한 뒤 ROLLBACK하여 언제든 반복 실행할 수 있습니다.
+
 PRAGMA foreign_keys = ON;
 
+-- Q01 | BASIC | 50,000원 이상 상품을 낮은 가격순으로 조회한다.
+SELECT id, name, price
+FROM product
+WHERE price >= 50000
+ORDER BY price ASC, id ASC;
+
+-- Q02 | BASIC | 가격이 20,000원 이상 50,000원 이하인 상품을 조회한다.
+SELECT id, name, price
+FROM product
+WHERE price BETWEEN 20000 AND 50000
+ORDER BY id ASC;
+
+-- Q03 | BASIC | 상품명에 'USB'가 포함된 상품을 검색한다.
+SELECT id, name, price
+FROM product
+WHERE name LIKE '%USB%'
+ORDER BY id ASC;
+
+-- Q04 | BASIC | 가장 최근에 들어온 주문 5건을 조회한다.
+SELECT id, member_id, ordered_at
+FROM orders
+ORDER BY ordered_at DESC, id DESC
+LIMIT 5;
+
+-- Q05 | JOIN | 주문 목록과 주문한 회원의 이름을 함께 조회한다.
+SELECT o.id AS order_id, m.name AS member_name, o.ordered_at
+FROM orders AS o
+INNER JOIN member AS m ON m.id = o.member_id
+ORDER BY o.id ASC;
+
+-- Q06 | JOIN | 주문 1번에 담긴 상품명, 상품 가격, 주문 수량, 항목별 합계 금액을 조회한다.
+SELECT oi.order_id, p.name AS product_name, p.price, oi.quantity,
+       p.price * oi.quantity AS item_total_price
+FROM order_item AS oi
+INNER JOIN product AS p ON p.id = oi.product_id
+WHERE oi.order_id = 1
+ORDER BY oi.id ASC;
+
+-- Q07 | JOIN | 4개 테이블을 모두 연결하여 1번 회원(김하늘)의 전체 구매 내역을 조회한다.
+SELECT m.name AS member_name, o.id AS order_id, o.ordered_at,
+       p.name AS product_name, p.price, oi.quantity
+FROM member AS m
+INNER JOIN orders AS o ON o.member_id = m.id
+INNER JOIN order_item AS oi ON oi.order_id = o.id
+INNER JOIN product AS p ON p.id = oi.product_id
+WHERE m.id = 1
+ORDER BY o.id ASC, oi.id ASC;
+
+-- Q08 | JOIN | 주문 이력이 없는 회원까지 포함하여 전체 회원의 주문 내역을 조회한다.
+SELECT m.id AS member_id, m.name AS member_name,
+       o.id AS order_id, o.ordered_at
+FROM member AS m
+LEFT JOIN orders AS o ON o.member_id = m.id
+ORDER BY m.id ASC, o.id ASC;
+
+-- Q09 | AGGREGATE | 회원별 총 주문 횟수를 구하고 주문이 많은 순서로 정렬한다.
+SELECT m.id AS member_id, m.name AS member_name,
+       COUNT(o.id) AS order_count
+FROM member AS m
+LEFT JOIN orders AS o ON o.member_id = m.id
+GROUP BY m.id, m.name
+ORDER BY order_count DESC, m.id ASC;
+
+-- Q10 | AGGREGATE | 상품별 누적 판매 수량과 총 판매 금액 합계를 구한다.
+SELECT p.id AS product_id, p.name AS product_name,
+       COALESCE(SUM(oi.quantity), 0) AS total_quantity,
+       COALESCE(SUM(p.price * oi.quantity), 0) AS total_sales_amount
+FROM product AS p
+LEFT JOIN order_item AS oi ON oi.product_id = p.id
+GROUP BY p.id, p.name
+ORDER BY total_sales_amount DESC, p.id ASC;
+
+-- Q11 | AGGREGATE | 판매된 상품별로 주문 상세 1건당 평균 구매 수량을 구한다.
+SELECT p.id AS product_id, p.name AS product_name,
+       COUNT(oi.id) AS order_item_count,
+       ROUND(AVG(oi.quantity), 2) AS avg_quantity
+FROM product AS p
+INNER JOIN order_item AS oi ON oi.product_id = p.id
+GROUP BY p.id, p.name
+ORDER BY p.id ASC;
+
+-- Q12 | SUBQUERY | 전체 상품의 평균 가격보다 비싼 상품을 조회한다.
+SELECT id, name, price
+FROM product
+WHERE price > (SELECT AVG(price) FROM product)
+ORDER BY price DESC, id ASC;
+
+-- Q13 | UPDATE | 2번 상품(무선 마우스)의 가격을 35,000원으로 수정하고 변경 결과를 확인한다.
 BEGIN;
+SELECT '수정 전' AS stage, id, name, price FROM product WHERE id = 2;
 
-INSERT INTO member (id, name, email, joined_at) VALUES
-    (1, '김하늘', 'haneul@example.com', '2026-08-01 09:00:00'),
-    (2, '이도윤', 'doyun@example.com', '2026-08-02 09:00:00'),
-    (3, '박서연', 'seoyeon@example.com', '2026-08-03 09:00:00'),
-    (4, '최민준', 'minjun@example.com', '2026-08-04 09:00:00'),
-    (5, '정지우', 'jiwoo@example.com', '2026-08-05 09:00:00'),
-    (6, '강서준', 'seojun@example.com', '2026-08-06 09:00:00'),
-    (7, '윤수아', 'sua@example.com', '2026-08-07 09:00:00'),
-    (8, '임예준', 'yejun@example.com', '2026-08-08 09:00:00'),
-    (9, '한지민', 'jimin@example.com', '2026-08-09 09:00:00'),
-    (10, '오유진', 'yujin@example.com', '2026-08-10 09:00:00');
+UPDATE product
+SET price = 35000
+WHERE id = 2;
 
-INSERT INTO product (id, name, price) VALUES
-    (1, '기계식 키보드', 69000),
-    (2, '무선 마우스', 30000),
-    (3, 'USB-C 허브', 45000),
-    (4, '노트북 거치대', 28000),
-    (5, '모니터 암', 75000),
-    (6, '웹캠', 55000),
-    (7, '마우스 패드', 12000),
-    (8, '블루투스 스피커', 48000),
-    (9, '외장 SSD', 129000),
-    (10, 'USB-C 케이블', 9000),
-    (11, 'LED 데스크 조명', 39000),
-    (12, '케이블 정리 홀더', 6000);
+SELECT '수정 후' AS stage, id, name, price FROM product WHERE id = 2;
+ROLLBACK;
 
-INSERT INTO orders (id, member_id, ordered_at) VALUES
-    (1, 1, '2026-09-01 10:00:00'),
-    (2, 2, '2026-09-02 11:00:00'),
-    (3, 3, '2026-09-03 12:00:00'),
-    (4, 1, '2026-09-04 13:00:00'),
-    (5, 4, '2026-09-05 14:00:00'),
-    (6, 5, '2026-09-06 15:00:00'),
-    (7, 2, '2026-09-07 10:00:00'),
-    (8, 6, '2026-09-08 11:00:00'),
-    (9, 7, '2026-09-09 12:00:00'),
-    (10, 3, '2026-09-10 13:00:00'),
-    (11, 8, '2026-09-11 14:00:00'),
-    (12, 1, '2026-09-12 15:00:00'),
-    (13, 4, '2026-09-13 10:00:00'),
-    (14, 5, '2026-09-14 11:00:00'),
-    (15, 6, '2026-09-15 12:00:00'),
-    (16, 2, '2026-09-16 13:00:00'),
-    (17, 7, '2026-09-17 14:00:00'),
-    (18, 8, '2026-09-18 15:00:00'),
-    (19, 1, '2026-09-19 10:00:00'),
-    (20, 2, '2026-09-20 11:00:00');
+-- Q14 | DELETE | 주문 상세 40번 데이터를 삭제하고 전체 행 수 변화를 확인한다.
+BEGIN;
+SELECT '삭제 전' AS stage, COUNT(*) AS total_rows FROM order_item;
 
--- 주문 1의 마우스 단가는 25,000원, 상품의 현재 가격은 30,000원입니다.
--- 현재 가격으로 과거 주문 금액을 다시 계산하지 않는 이유를 확인합니다.
-INSERT INTO order_item (id, order_id, product_id, quantity, unit_price) VALUES
-    (1, 1, 1, 1, 69000),
-    (2, 1, 2, 2, 25000),
-    (3, 2, 3, 1, 45000),
-    (4, 2, 10, 3, 9000),
-    (5, 3, 4, 1, 28000),
-    (6, 3, 7, 2, 12000),
-    (7, 3, 10, 1, 9000),
-    (8, 4, 9, 1, 119000),
-    (9, 5, 5, 1, 75000),
-    (10, 5, 6, 1, 55000),
-    (11, 5, 10, 1, 9000),
-    (12, 6, 8, 1, 48000),
-    (13, 7, 2, 1, 30000),
-    (14, 7, 10, 2, 9000),
-    (15, 8, 1, 1, 69000),
-    (16, 8, 4, 1, 28000),
-    (17, 9, 3, 2, 45000),
-    (18, 9, 10, 4, 9000),
-    (19, 10, 6, 1, 55000),
-    (20, 10, 7, 1, 12000),
-    (21, 11, 9, 1, 129000),
-    (22, 11, 3, 1, 45000),
-    (23, 12, 2, 2, 30000),
-    (24, 12, 7, 3, 12000),
-    (25, 13, 5, 1, 75000),
-    (26, 13, 10, 2, 9000),
-    (27, 14, 8, 2, 48000),
-    (28, 14, 2, 1, 30000),
-    (29, 15, 4, 2, 28000),
-    (30, 15, 10, 1, 9000),
-    (31, 16, 1, 1, 69000),
-    (32, 16, 6, 1, 55000),
-    (33, 17, 3, 1, 45000),
-    (34, 17, 7, 2, 12000),
-    (35, 18, 9, 1, 129000),
-    (36, 18, 10, 3, 9000),
-    (37, 19, 8, 1, 48000),
-    (38, 19, 10, 1, 9000),
-    (39, 20, 2, 1, 30000),
-    (40, 20, 7, 1, 12000);
+DELETE FROM order_item
+WHERE id = 40;
 
-COMMIT;
+SELECT '삭제 후' AS stage, COUNT(*) AS total_rows FROM order_item;
+ROLLBACK;
+
+-- Q15 | INDEX | 특정 회원의 주문 내역을 빠르게 검색하기 위해 인덱스를 생성한다.
+-- 적용 이유: orders.member_id 조건 검색 및 member 테이블과의 JOIN 속도를 높이기 위해 적용한다.
+CREATE INDEX IF NOT EXISTS idx_orders_member_id ON orders(member_id);
+
+EXPLAIN QUERY PLAN
+SELECT id, member_id, ordered_at
+FROM orders
+WHERE member_id = 1;

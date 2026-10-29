@@ -1,22 +1,19 @@
-Q06 | JOIN | 주문 1번의 상품명, 수량, 당시 단가와 항목 금액을 조회한다.
-실행 시각: 2026-10-15T13:58:11+09:00
-SQLite: 3.53.1
+Q06 | JOIN | 주문 1번에 담긴 상품명, 상품 가격, 주문 수량, 항목별 합계 금액을 조회한다.
+실행 시각: 2026-10-29T13:26:33+09:00
+SQLite: 3.53.4
 원본: sql/03_queries.sql
 DB: data/shop.db
 
 [실행 SQL]
--- 금액은 현재 product.price가 아닌 order_item.unit_price로 계산합니다.
-SELECT oi.order_id, p.name AS product_name, oi.quantity, oi.unit_price,
-       oi.quantity * oi.unit_price AS line_total_won
+SELECT oi.order_id, p.name AS product_name, p.price, oi.quantity,
+       p.price * oi.quantity AS item_total_price
 FROM order_item AS oi
 INNER JOIN product AS p ON p.id = oi.product_id
 WHERE oi.order_id = 1
-ORDER BY oi.id;
+ORDER BY oi.id ASC;
 [실제 결과]
-order_id | product_name  | quantity | unit_price | line_total_won
----------+---------------+----------+------------+---------------
-1        | 기계식 키보드 | 1        | 69000      | 69000         
-1        | 무선 마우스   | 2        | 25000      | 50000         
-(2행)
+order_id | product_name | price | quantity | item_total_price
+---------+--------------+-------+----------+-----------------
+(0행)
 
 상태: 성공

@@ -1,6 +1,6 @@
-Q02 | BASIC | 20,000원 이상 50,000원 이하의 상품을 조회한다.
-실행 시각: 2026-10-15T13:58:11+09:00
-SQLite: 3.53.1
+Q02 | BASIC | 가격이 20,000원 이상 50,000원 이하인 상품을 조회한다.
+실행 시각: 2026-10-29T13:26:33+09:00
+SQLite: 3.53.4
 원본: sql/03_queries.sql
 DB: data/shop.db
 
@@ -8,15 +8,10 @@ DB: data/shop.db
 SELECT id, name, price
 FROM product
 WHERE price BETWEEN 20000 AND 50000
-ORDER BY id;
+ORDER BY id ASC;
 [실제 결과]
-id | name            | price
----+-----------------+------
-2  | 무선 마우스     | 30000
-3  | USB-C 허브      | 45000
-4  | 노트북 거치대   | 28000
-8  | 블루투스 스피커 | 48000
-11 | LED 데스크 조명 | 39000
-(5행)
+id | name | price
+---+------+------
+(0행)
 
 상태: 성공
