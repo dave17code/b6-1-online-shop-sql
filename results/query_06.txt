@@ -6,13 +6,13 @@ Source: sql/03_queries.sql
 Order: Q01 to Q15 from the original sample data
 
 [SQL]
-SELECT product_name, quantity, unit_price, quantity * unit_price AS item_total
+SELECT product_name, quantity, price, quantity * price AS item_total
 FROM order_items
 INNER JOIN products USING (product_id)
 WHERE order_id = 1
 ORDER BY order_item_id;
 [RESULT]
-| product_name | quantity | unit_price | item_total |
+| product_name | quantity | price | item_total |
 | --- | --- | --- | --- |
 | Pencil | 2 | 1000 | 2000 |
 | Notebook | 1 | 2000 | 2000 |

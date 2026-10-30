@@ -29,7 +29,6 @@ Windows·macOS에서는 실행용 확장에 포함된 SQLite CLI를 사용하며
 | sql/03_queries.sql | 설명이 붙은 필수 쿼리 Q01~Q15 |
 | sql/04_reset.sql | 원본 테이블·데이터·필수 인덱스 복원 |
 | results/query_01.txt ~ query_15.txt | 실제 SQL 실행 결과 15개 |
-| results/validation.txt | 필수 조건·제약조건·수정·삭제·복원 검증 기록 |
 
 필수 제출 SQL은 **01·02·03**입니다. 04는 반복 실습을 돕는 보조 파일입니다.
 
@@ -40,15 +39,15 @@ Windows·macOS에서는 실행용 확장에 포함된 SQLite CLI를 사용하며
 | customers | 고객 | customer_id, customer_name, email |
 | products | 상품 | product_id, product_name, price |
 | orders | 주문 | order_id, customer_id, order_date |
-| order_items | 주문에 담긴 상품과 수량 | order_item_id, order_id, product_id, quantity, unit_price |
+| order_items | 주문에 담긴 상품과 수량 | order_item_id, order_id, product_id, quantity |
 
-- **PK:** customer_id, product_id, order_id, order_item_id는 각각 자기 테이블의 행을 구분합니다.
-- **FK:** orders.customer_id → customers.customer_id, order_items.order_id → orders.order_id, order_items.product_id → products.product_id.
-- **1:N:** 고객 한 명은 여러 주문을, 주문 한 건은 여러 주문상품을 가집니다. 상품 하나도 여러 주문상품에서 판매될 수 있습니다.
-- **NOT NULL:** 필요한 값이 NULL인 상태를 막습니다. **UNIQUE:** email 중복을 막습니다.
-- **자료형:** 번호·금액·수량은 INTEGER, 이름·이메일·날짜는 TEXT입니다. 날짜는 YYYY-MM-DD, 금액은 원 단위입니다.
-- **price:** 상품의 현재 가격. **unit_price:** 주문 당시 상품 한 개의 가격. 과거 주문 금액은 `quantity * unit_price`로 계산합니다.
-- **USING (customer_id):** 양쪽 테이블의 customer_id가 같은 행을 연결합니다. 테이블 별칭 없이 짧게 작성했습니다.
+1. **PK:** customer_id, product_id, order_id, order_item_id는 각각 자기 테이블의 행을 구분합니다.
+2. **FK:** orders.customer_id → customers.customer_id, order_items.order_id → orders.order_id, order_items.product_id → products.product_id.
+3. **1:N:** 고객 한 명은 여러 주문을, 주문 한 건은 여러 주문상품을 가집니다. 상품 하나도 여러 주문상품에서 판매될 수 있습니다.
+4. **NOT NULL:** 필요한 값이 NULL인 상태를 막습니다. **UNIQUE:** email 중복을 막습니다.
+5. **자료형:** 번호·금액·수량은 INTEGER, 이름·이메일·날짜는 TEXT입니다. 날짜는 YYYY-MM-DD, 금액은 원 단위입니다.
+6. **price:** 상품 1개의 판매 가격입니다. 주문 상품 금액은 `products` 테이블과 조인하여 `quantity * price`로 계산합니다.
+7. **USING (customer_id):** 양쪽 테이블의 customer_id가 같은 행을 연결합니다. 테이블 별칭 없이 짧게 작성했습니다.
 
 고객 이름은 김가람·이나래 등 한글입니다. 상품 이름은 Pencil·Notebook 등 영어입니다.
 Pen Case는 필통, Colored Pencil은 색연필입니다.
@@ -81,7 +80,7 @@ Pen Case는 필통, Colored Pencil은 색연필입니다.
 | Q03 | Pencil이 포함된 이름 | LIKE·% | Pencil·Colored Pencil |
 | Q04 | 최근 주문 5건 | DESC·LIMIT | order_id 10·9·8·7·6 |
 | Q05 | 주문과 고객 이름 | INNER JOIN·USING | 주문 10건에 한글 고객 이름 |
-| Q06 | 주문 1번 상품 금액 | JOIN·quantity×unit_price | Pencil 2000원·Notebook 2000원, 합계 4000원 |
+| Q06 | 주문 1번 상품 금액 | JOIN·quantity×price | Pencil 2000원·Notebook 2000원, 합계 4000원 |
 | Q07 | 고객 1번 구매 내역 | 네 테이블 연결 | 김가람의 주문 2건, 주문상품 3행 |
 | Q08 | 주문 없는 고객 포함 | LEFT JOIN·NULL | 12행, 고객 9·10의 order_id NULL |
 | Q09 | 고객별 주문 횟수 | COUNT·GROUP BY | 김가람·이나래 2건, 한이든·오하늘 0건 |
@@ -101,11 +100,11 @@ Q10·Q11은 판매 내역만 INNER JOIN하므로 판매되지 않은 상품은 �
 
 Q13·Q14의 변경은 **실제 저장되며 자동으로 취소되지 않습니다.** 실행 후 뷰어를 다시 열어 확인합니다.
 
-- **Q13:** products의 Pencil 가격은 1200원으로 바뀌지만, order_items의 기존 unit_price는 1000원 그대로입니다.
-- **Q14:** order_items에서 4번 Pen 행만 사라집니다. 주문 2번의 Eraser 행과 orders의 주문 2번은 남습니다.
-- **Q15:** 결과의 index_name과 table_name을 확인합니다. 인덱스는 데이터 값 자체를 바꾸지 않습니다.
+1. **Q13:** products 테이블에서 1번 Pencil의 price가 1000원에서 1200원으로 바뀝니다.
+2. **Q14:** order_items에서 4번 Pen 행만 사라집니다. 주문 2번의 Eraser 행과 orders의 주문 2번은 남습니다.
+3. **Q15:** 결과의 index_name과 table_name을 확인합니다. 인덱스는 데이터 값 자체를 바꾸지 않습니다.
 
-🎯 현재 가격과 과거 단가를 분리하는 이유, WHERE로 수정·삭제 대상을 정하는 방법, 검색 컬럼에 인덱스를 두는 이유를 설명해 보세요.
+🎯 테이블을 역할별로 나누고 JOIN으로 주문 금액을 계산하는 이유, WHERE로 수정·삭제 대상을 정확히 지정하는 방법, 검색 컬럼에 인덱스를 두는 이유를 설명해 보세요.
 
 ### ⑤ 결과 저장과 복원 🔄
 

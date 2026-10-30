@@ -1,4 +1,4 @@
-Q10 | AGGREGATE | Add quantities and historical amounts for each sold product.
+Q10 | AGGREGATE | Add quantities and sales amounts for each sold product.
 Recorded: 2026-10-29T14:33:22+09:00
 SQLite: 3.53.1
 Database: data/shop.db
@@ -6,9 +6,8 @@ Source: sql/03_queries.sql
 Order: Q01 to Q15 from the original sample data
 
 [SQL]
--- Use the historical unit_price, not the current product price.
 SELECT product_name, SUM(quantity) AS total_quantity,
-       SUM(quantity * unit_price) AS total_amount
+       SUM(quantity * price) AS total_amount
 FROM products
 INNER JOIN order_items USING (product_id)
 GROUP BY product_id, product_name

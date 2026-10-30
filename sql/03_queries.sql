@@ -38,14 +38,14 @@ INNER JOIN customers USING (customer_id)
 ORDER BY order_id;
 
 -- Q06 | JOIN | Show products and item totals for order 1.
-SELECT product_name, quantity, unit_price, quantity * unit_price AS item_total
+SELECT product_name, quantity, price, quantity * price AS item_total
 FROM order_items
 INNER JOIN products USING (product_id)
 WHERE order_id = 1
 ORDER BY order_item_id;
 
 -- Q07 | JOIN | Join four tables to show purchases by customer 1.
-SELECT customer_name, order_id, order_date, product_name, quantity, unit_price
+SELECT customer_name, order_id, order_date, product_name, quantity, price
 FROM customers
 INNER JOIN orders USING (customer_id)
 INNER JOIN order_items USING (order_id)
@@ -67,10 +67,9 @@ LEFT JOIN orders USING (customer_id)
 GROUP BY customer_id, customer_name
 ORDER BY order_count DESC, customer_id;
 
--- Q10 | AGGREGATE | Add quantities and historical amounts for each sold product.
--- Use the historical unit_price, not the current product price.
+-- Q10 | AGGREGATE | Add quantities and sales amounts for each sold product.
 SELECT product_name, SUM(quantity) AS total_quantity,
-       SUM(quantity * unit_price) AS total_amount
+       SUM(quantity * price) AS total_amount
 FROM products
 INNER JOIN order_items USING (product_id)
 GROUP BY product_id, product_name
@@ -89,7 +88,7 @@ FROM products
 WHERE price > (SELECT AVG(price) FROM products)
 ORDER BY price DESC, product_id;
 
--- Q13 | UPDATE | Change the current price of Pencil from 1000 to 1200 KRW.
+-- Q13 | UPDATE | Change the price of Pencil from 1000 to 1200 KRW.
 -- SQLite-specific: enable foreign keys for this selected block. Changes are saved.
 PRAGMA foreign_keys = ON;
 UPDATE products

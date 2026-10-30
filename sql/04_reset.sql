@@ -2,11 +2,6 @@
 -- Restore the original four tables, sample rows, and required index.
 -- Execute this entire file. practice.sql and result files are not changed.
 
--- sqlite
--- B6-1 | Online stationery shop | SQLite
--- Recreate four empty practice tables. Existing practice data is removed.
--- Run: 01_schema.sql -> 02_seed.sql -> 03_queries.sql
--- SQLite-specific: PRAGMA. Store dates as YYYY-MM-DD text and money as integer KRW.
 PRAGMA foreign_keys = ON;
 
 DROP TABLE IF EXISTS order_items;
@@ -38,17 +33,9 @@ CREATE TABLE order_items (
     order_id INTEGER NOT NULL,
     product_id INTEGER NOT NULL,
     quantity INTEGER NOT NULL,
-    unit_price INTEGER NOT NULL,
     FOREIGN KEY (order_id) REFERENCES orders(order_id),
     FOREIGN KEY (product_id) REFERENCES products(product_id)
 );
-
--- sqlite
--- 10 customers, 10 products, 10 orders, 12 order items.
--- Insert parents before children. Customer names remain in Korean.
--- Customers 9 and 10 have no orders. Products 9 and 10 have no sales.
--- SQLite-specific: enable foreign keys for this connection.
-PRAGMA foreign_keys = ON;
 
 INSERT INTO customers (customer_id, customer_name, email) VALUES
     (1, '김가람', 'user1@shop.test'),
@@ -87,20 +74,20 @@ INSERT INTO orders (order_id, customer_id, order_date) VALUES
     (10, 8, '2026-01-10');
 
 INSERT INTO order_items
-    (order_item_id, order_id, product_id, quantity, unit_price)
+    (order_item_id, order_id, product_id, quantity)
 VALUES
-    (1, 1, 1, 2, 1000),
-    (2, 1, 2, 1, 2000),
-    (3, 2, 3, 2, 500),
-    (4, 2, 4, 2, 1500),
-    (5, 3, 1, 1, 1000),
-    (6, 4, 5, 1, 1000),
-    (7, 5, 6, 1, 5000),
-    (8, 6, 7, 1, 3000),
-    (9, 7, 2, 2, 2000),
-    (10, 8, 8, 3, 1000),
-    (11, 9, 3, 2, 500),
-    (12, 10, 8, 1, 1000);
+    (1, 1, 1, 2),
+    (2, 1, 2, 1),
+    (3, 2, 3, 2),
+    (4, 2, 4, 2),
+    (5, 3, 1, 1),
+    (6, 4, 5, 1),
+    (7, 5, 6, 1),
+    (8, 6, 7, 1),
+    (9, 7, 2, 2),
+    (10, 8, 8, 3),
+    (11, 9, 3, 2),
+    (12, 10, 8, 1);
 
 CREATE INDEX IF NOT EXISTS orders_customer_id_index ON orders(customer_id);
 

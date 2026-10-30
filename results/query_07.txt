@@ -6,7 +6,7 @@ Source: sql/03_queries.sql
 Order: Q01 to Q15 from the original sample data
 
 [SQL]
-SELECT customer_name, order_id, order_date, product_name, quantity, unit_price
+SELECT customer_name, order_id, order_date, product_name, quantity, price
 FROM customers
 INNER JOIN orders USING (customer_id)
 INNER JOIN order_items USING (order_id)
@@ -14,7 +14,7 @@ INNER JOIN products USING (product_id)
 WHERE customer_id = 1
 ORDER BY order_id, order_item_id;
 [RESULT]
-| customer_name | order_id | order_date | product_name | quantity | unit_price |
+| customer_name | order_id | order_date | product_name | quantity | price |
 | --- | --- | --- | --- | --- | --- |
 | 김가람 | 1 | 2026-01-01 | Pencil | 2 | 1000 |
 | 김가람 | 1 | 2026-01-01 | Notebook | 1 | 2000 |
